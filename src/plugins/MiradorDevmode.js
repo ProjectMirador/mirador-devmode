@@ -1,8 +1,10 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
+import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
-import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 import RestoreSharpIcon from '@material-ui/icons/RestoreSharp';
 import CancelPresentationSharpIcon from '@material-ui/icons/CancelPresentationSharp';
 import SaveAltSharpIcon from '@material-ui/icons/SaveAltSharp';
@@ -12,14 +14,44 @@ import CompanionWindow from 'mirador/dist/es/src/containers/CompanionWindow';
 const MiradorDevmode = {};
 
 MiradorDevmode.Viewer = ({ viewer }) => {
+  const [value, setValue] = React.useState(false);
+
   const target = useCallback((node) => {
     if (node) node.viewer = viewer; // eslint-disable-line
   });
 
-  return <div className="viewer-ref" ref={target} />;
+  const handleChange = (event) => {
+    setValue(event.target.checked);
+  };
+
+  if (viewer) viewer.setDebugMode(value);
+
+  return (
+    <div className="viewer-ref" ref={target} style={{ position: 'absolute', zIndex: 999 }}>
+      <FormControlLabel
+        control={<Switch checked={value} onChange={handleChange} name="debug" />}
+        label="OSD Debug"
+      />
+    </div>
+  );
 };
 
 MiradorDevmode.Viewer.propTypes = {
+  viewer: PropTypes.object, // eslint-disable-line
+};
+
+MiradorDevmode.Coordinates = ({ viewer }) => {
+  const [value, setValue] = React.useState('0, 0');
+
+  viewer && viewer.addHandler('mouse-move', (e) => {
+    const point = viewer.viewport.pointFromPixel(e.position);
+    setValue(`${Math.round(point.x)},${Math.round(point.y)}`)
+  });
+
+  return <Paper style={{ position: 'absolute', zIndex: 999, padding: 4, left: 4, top: '2rem' }}>Cursor: {value}</Paper>;
+};
+
+MiradorDevmode.Coordinates.propTypes = {
   viewer: PropTypes.object, // eslint-disable-line
 };
 

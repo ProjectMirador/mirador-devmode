@@ -8,6 +8,11 @@ export default [
     component: MiradorDevmode.Viewer,
   },
   {
+    target: 'OpenSeadragonViewer',
+    mode: 'add',
+    component: MiradorDevmode.Coordinates,
+  },
+  {
     companionWindowKey: 'devmode',
     component: MiradorDevmode.Panel,
     mapStateToProps: (state, { windowId }) => ({
