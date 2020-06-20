@@ -31,17 +31,21 @@ MiradorDevmode.Panel = ({ id, manifest, manifestId, receiveManifest, windowId })
   const storedValue = manifest && JSON.stringify({ ...manifest.json, __original: null }, null, 2);
 
   const [value, setValue] = React.useState(storedValue);
-  const handleChange = (event) => {
-    setValue(event.target.value);
-  };
-  const handleCancel = (event) => {
-    setValue(storedValue);
-  };
 
   const updateManifest = (text) => {
     const json = { ...JSON.parse(text), __original: manifest.json.__original };
     return receiveManifest(manifestId, json);
   }
+  const handleChange = (event) => {
+    setValue(event.target.value);
+    try {
+      updateManifest(event.target.value);
+    } catch(ex) { console.log(ex) }
+  };
+
+  const handleCancel = (event) => {
+    setValue(storedValue);
+  };
 
   const handleRevert = (event) => {
     if (!manifest || !manifest.json || !manifest.json.__original) return;
